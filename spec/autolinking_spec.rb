@@ -439,6 +439,10 @@ describe Twitter::Autolink do
         auto_linked = @linker.auto_link("http://audioboo.fm/test", :html_attrs=>{:do=>"stuff"})
         auto_linked.should =~ %r(<a[^\>]*do="stuff"[^\>]*>)
       end
+      it "shouldn't blast the rel=nofollow" do
+        auto_linked = @linker.auto_link("http://audioboo.fm/test", :html_attrs=>{:do=>"stuff"})
+        auto_linked.should =~ %r(<a[^\>]*rel="nofollow"[^\>]*>)        
+      end
       it "should take :html_attribute and add into anchor tag for matched hash-tags" do
         auto_linked = @linker.auto_link("#bigtag", :html_attrs=>{:do=>"stuff"})
         auto_linked.should =~ %r(<a[^\>]*do="stuff"[^\>]*>)

@@ -106,13 +106,13 @@ module Twitter
     # the <tt>rel="nofollow"</tt> attribute will be added.
     def auto_link_urls_custom(text, href_options = {})
       options = href_options.dup
-      options[:rel] = "nofollow" unless options.delete(:suppress_no_follow)
+      html_options = options.delete(:suppress_no_follow) ? {} : {:rel=>"nofollow"}
+      html_options.merge!(options[:html_attrs] || {})
 
       text.gsub(Twitter::Regex[:valid_url]) do
         all, before, url, protocol = $1, $2, $3, $4
-        html_attrs = tag_options((options[:html_attrs] || {}).stringify_keys) || ""
         full_url = (protocol =~ WWW_REGEX ? "http://#{url}" : url)
-        "#{before}<a href=\"#{full_url}\"#{html_attrs}>#{url}</a>"
+        "#{before}<a href=\"#{full_url}\"#{tag_options(html_options.stringify_keys)}>#{url}</a>"
       end
     end
 
