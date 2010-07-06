@@ -57,8 +57,9 @@ module Twitter
       options[:username_class] ||= DEFAULT_USERNAME_CLASS
       options[:username_url_base] ||= "http://twitter.com/"
       options[:list_url_base] ||= "http://twitter.com/"
-      extra_html = HTML_ATTR_NO_FOLLOW unless options[:suppress_no_follow]
-
+      extra_html = tag_options((options[:html_attrs] || {}).stringify_keys) || ""
+      extra_html += HTML_ATTR_NO_FOLLOW unless options[:suppress_no_follow]
+      
       text.gsub(Twitter::Regex[:auto_link_usernames_or_lists]) do
         if $4 && !options[:suppress_lists]
           # the link is a list
@@ -87,7 +88,8 @@ module Twitter
       options[:url_class] ||= DEFAULT_URL_CLASS
       options[:hashtag_class] ||= DEFAULT_HASHTAG_CLASS
       options[:hashtag_url_base] ||= "http://twitter.com/search?q=%23"
-      extra_html = HTML_ATTR_NO_FOLLOW unless options[:suppress_no_follow]
+      extra_html = tag_options((options[:html_attrs] || {}).stringify_keys) || ""
+      extra_html += HTML_ATTR_NO_FOLLOW unless options[:suppress_no_follow]
 
       text.gsub(Twitter::Regex[:auto_link_hashtags]) do
         before = $1
@@ -108,7 +110,7 @@ module Twitter
 
       text.gsub(Twitter::Regex[:valid_url]) do
         all, before, url, protocol = $1, $2, $3, $4
-        html_attrs = tag_options(options.stringify_keys) || ""
+        html_attrs = tag_options((options[:html_attrs] || {}).stringify_keys) || ""
         full_url = (protocol =~ WWW_REGEX ? "http://#{url}" : url)
         "#{before}<a href=\"#{full_url}\"#{html_attrs}>#{url}</a>"
       end

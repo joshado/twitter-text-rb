@@ -430,7 +430,23 @@ describe Twitter::Autolink do
         auto_linked = @linker.auto_link("http://twitter.com/#search")
         auto_linked.should have_autolinked_url('http://twitter.com/#search')
       end
-
+      
+      it "shouldn't print the options in the anchor tag" do
+        auto_linked = @linker.auto_link("http://audioboo.fm/test", :username_url_base=>"http://audioboo.fm/")
+        auto_linked.should_not =~ /username_url_base/
+      end
+      it "should take :html_attribute and add into anchor tag for matched URLs" do
+        auto_linked = @linker.auto_link("http://audioboo.fm/test", :html_attrs=>{:do=>"stuff"})
+        auto_linked.should =~ %r(<a[^\>]*do="stuff"[^\>]*>)
+      end
+      it "should take :html_attribute and add into anchor tag for matched hash-tags" do
+        auto_linked = @linker.auto_link("#bigtag", :html_attrs=>{:do=>"stuff"})
+        auto_linked.should =~ %r(<a[^\>]*do="stuff"[^\>]*>)
+      end
+      it "should take :html_attribute and add into anchor tag for matched usernames" do
+        auto_linked = @linker.auto_link("@bigtag", :html_attrs=>{:do=>"stuff"})
+        auto_linked.should =~ %r(<a[^\>]*do="stuff"[^\>]*>)
+      end
     end
     
   end
